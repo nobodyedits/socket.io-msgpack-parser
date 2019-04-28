@@ -28,7 +28,7 @@ Encoder.prototype.encode = function (packet, callback) {
     case exports.ERROR:
       return callback([ JSON.stringify(packet) ]);
     default:
-      return callback([ msgpack.encode(packet) ]);
+      return callback([ msgpack.encode([packet.type, packet.data]) ]);
   }
 };
 
@@ -56,7 +56,7 @@ Decoder.prototype.parseJSON = function (obj) {
 Decoder.prototype.parseBinary = function (obj) {
   try {
     var decoded = msgpack.decode(obj);
-    this.emit('decoded', decoded);
+    this.emit('decoded', { nsp: "/", type: decoded[0], data: decoded[1] });
   } catch (e) {
     this.emit('decoded', errorPacket);
   }
