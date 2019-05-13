@@ -1,4 +1,3 @@
-
 var msgpack = require('notepack.io');
 var Emitter = require('component-emitter');
 
@@ -45,21 +44,24 @@ Decoder.prototype.add = function (obj) {
 };
 
 Decoder.prototype.parseJSON = function (obj) {
+  var decoded;
   try {
-    var decoded = JSON.parse(obj);
-    this.emit('decoded', decoded);
+    decoded = JSON.parse(obj);
   } catch (e) {
-    this.emit('decoded', errorPacket);
+    decoded = errorPacket;
   }
+  this.emit('decoded', decoded);
 };
 
 Decoder.prototype.parseBinary = function (obj) {
+  var decoded;
   try {
-    var decoded = msgpack.decode(obj);
-    this.emit('decoded', { nsp: "/", type: decoded[0], data: decoded[1] });
+    var p = msgpack.decode(obj);
+    decoded = { nsp: "/", type: p[0], data: p[1] };
   } catch (e) {
-    this.emit('decoded', errorPacket);
+    decoded = errorPacket;
   }
+  this.emit('decoded', decoded);
 };
 
 Decoder.prototype.destroy = function () {};
